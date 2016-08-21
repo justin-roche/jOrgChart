@@ -99,7 +99,8 @@
     chartElement : 'body',
     depth      : -1,
     chartClass : "jOrgChart",
-    dragAndDrop: false
+    dragAndDrop: false,
+    eventCopy: false,
   };
   
   var nodeCount = 0;
@@ -131,6 +132,18 @@
     $nodeDiv = $("<div>").addClass("node")
                                      .data("tree-node", nodeCount)
                                      .append($nodeContent);
+    
+    //copy event handlers to li
+    if(opts.eventCopy==true){
+      var events = $node.data('events');
+      if ( events ) {
+          for ( var eventType in events ) {
+              for ( var idx in events[eventType]) {
+                  $nodeDiv[ eventType ](events[eventType][idx].handler);
+              }
+          }
+      } 
+    }
 
     // Expand and contract nodes
     if ($childNodes.length > 0) {

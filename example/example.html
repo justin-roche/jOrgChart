@@ -16,9 +16,14 @@
 
     <script>
     jQuery(document).ready(function() {
+        $('li').click(function(e){
+            alert('clicked');
+        });
+
         $("#org").jOrgChart({
             chartElement : '#chart',
-            dragAndDrop  : true
+            dragAndDrop  : true,
+            eventCopy: false,
         });
     });
     </script>

@@ -68,27 +68,27 @@
     
       // Drop event handler for nodes
       $('div.node').bind("drop", function handleDropEvent( event, ui ) {    
-	  
+    
         var targetID = $(this).data("tree-node");
         var targetLi = $this.find("li").filter(function() { return $(this).data("tree-node") === targetID; } );
         var targetUl = targetLi.children('ul');
-		
-        var sourceID = ui.draggable.data("tree-node");		
-        var sourceLi = $this.find("li").filter(function() { return $(this).data("tree-node") === sourceID; } );		
+    
+        var sourceID = ui.draggable.data("tree-node");    
+        var sourceLi = $this.find("li").filter(function() { return $(this).data("tree-node") === sourceID; } );   
         var sourceUl = sourceLi.parent('ul');
 
         if (targetUl.length > 0){
-  		    targetUl.append(sourceLi);
+          targetUl.append(sourceLi);
         } else {
-  		    targetLi.append("<ul></ul>");
-  		    targetLi.children('ul').append(sourceLi);
+          targetLi.append("<ul></ul>");
+          targetLi.children('ul').append(sourceLi);
         }
         
         //Removes any empty lists
         if (sourceUl.children().length === 0){
           sourceUl.remove();
         }
-		
+    
       }); // handleDropEvent
         
     } // Drag and drop
@@ -99,9 +99,10 @@
     chartElement : 'body',
     depth      : -1,
     chartClass : "jOrgChart",
-    dragAndDrop: false
+    dragAndDrop: false,
+    eventCopy: false,
   };
-	
+  
   var nodeCount = 0;
   // Method that recursively builds the tree
   function buildNode($node, $appendTo, level, opts) {
@@ -124,13 +125,25 @@
                             .remove()
                             .end()
                             .html();
-	
+  
       //Increaments the node count which is used to link the source list and the org chart
-  	nodeCount++;
-  	$node.data("tree-node", nodeCount);
-  	$nodeDiv = $("<div>").addClass("node")
+    nodeCount++;
+    $node.data("tree-node", nodeCount);
+    $nodeDiv = $("<div>").addClass("node")
                                      .data("tree-node", nodeCount)
                                      .append($nodeContent);
+    
+    //copy event handlers to li
+    if(opts.eventCopy==true){
+      var events = $node.data('events');
+      if ( events ) {
+          for ( var eventType in events ) {
+              for ( var idx in events[eventType]) {
+                  $nodeDiv[ eventType ](events[eventType][idx].handler);
+              }
+          }
+      } 
+    }
 
     // Expand and contract nodes
     if ($childNodes.length > 0) {
